@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TractTalk Demo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Castoro:ital@0;1&display=swap">
+<style>
+/* Layout: project-page template on a white page (centered hero, max-desktop column); samples as rows of labelled video tiles */
+:root {
+  --bg: #ffffff;
+  --fg: #363636;
+  --strong: #1f1f1f;
+  --muted: #6b6f76;
+  --line: #e4e6ea;
+  --seen: #1f8a5f;      /* articulators seen by the camera (teaser green) */
+  --inferred: #d06a14;  /* articulators inferred from video (teaser orange) */
+  --ours: #fdf1e3;
+  --btn: #363636;
+  --btn-fg: #ffffff;
+  --font-title: "Google Sans", "Noto Sans", system-ui, sans-serif;
+  --font-body: "Noto Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-quote: "Castoro", Georgia, serif;
+  color-scheme: light;
+}
+html, body { background: var(--bg); }
+body { color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
+.wrap {
+  max-width: 960px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wide { max-width: 1480px; }
+section { padding-block: 40px; }
+h1, h2, h3 { font-family: var(--font-title); color: var(--strong); text-wrap: balance; margin: 0; }
+
+/* hero */
+.hero { text-align: center; padding-block: 56px 24px; }
+.hero h1 { font-size: clamp(1.9rem, 4.2vw, 3rem); line-height: 1.15; font-weight: 600; }
+.hero .sub { margin-top: 18px; color: var(--muted); font-size: 1.05rem; }
+.links { margin-top: 22px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.links a {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--btn); color: var(--btn-fg); text-decoration: none;
+  padding: 8px 18px; border-radius: 999px; font-size: 0.95rem;
+}
+.links a:focus-visible { outline: 3px solid var(--seen); outline-offset: 2px; }
+.links svg { width: 16px; height: 16px; fill: currentColor; }
+
+/* teaser */
+.teaser figure { margin: 0; }
+.teaser img { display: block; width: 100%; height: auto; }
+.teaser figcaption { margin-top: 14px; font-size: 0.95rem; text-align: justify; }
+.teaser figcaption b { color: var(--strong); }
+.seen { color: var(--seen); font-weight: 600; }
+.inferred { color: var(--inferred); font-weight: 600; }
+
+/* problem */
+h2 { font-size: 1.85rem; font-weight: 600; text-align: center; margin-bottom: 22px; }
+.prose { max-width: 68ch; margin: 0 auto; text-align: justify; }
+.prose p { margin: 0 0 14px; }
+
+/* samples */
+.note { max-width: 80ch; margin: 0 auto 10px; text-align: center; color: var(--muted); font-size: 0.95rem; }
+.sample { border-top: 1px solid var(--line); padding-block: 18px 8px; }
+.sample .cap { margin-bottom: 10px; }
+.sample .cap .k { font-weight: 600; color: var(--strong); margin-right: 6px; }
+.sample .cap i { font-family: var(--font-quote); font-size: 1.05rem; }
+.sample .cap .id { margin-left: 10px; font-size: 0.78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tiles { display: flex; flex-wrap: wrap; gap: 14px 10px; justify-content: center; }
+.tile { margin: 0; width: 150px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px; border-radius: 6px; }
+.tile.ours { background: var(--ours); }
+.tile video { display: block; width: 150px; max-width: 100%; aspect-ratio: 1 / 1; background: #000; border-radius: 3px; }
+.tile figcaption { text-align: center; line-height: 1.25; }
+.tile .name { font-weight: 600; color: var(--strong); font-size: 0.9rem; }
+.tile .tag { display: block; font-size: 0.72rem; letter-spacing: 0.04em; color: var(--muted); }
+.tile.ours .tag { color: var(--inferred); }
+.foot { text-align: center; color: var(--muted); font-size: 0.85rem; padding-block: 28px 48px; }
+</style>
+</head>
+<body>
+
+<header class="hero wrap">
+  <h1>TractTalk: Learning Articulatory Trajectories<br>for Lip-to-Speech Synthesis</h1>
+  <div class="sub">Anonymous submission · Demo page</div>
+  <div class="links">
+    <a href="#samples"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>Audio samples</a>
+  </div>
+</header>
+
+<section class="teaser wrap" style="padding-block: 8px 24px;">
+  <figure>
+    <img src="static/images/teaser.png" alt="Pipeline: a silent face video goes into a Video Reader, which outputs a TractScore of articulatory trajectories (lip aperture and jaw seen by the camera; tongue tip, tongue dorsum, pitch and loudness inferred), which a Speech Renderer turns into speech.">
+    <figcaption><b>Lip-to-speech through an articulatory representation.</b>
+      The camera sees the <span class="seen">lips and the jaw</span>; the <span class="inferred">tongue and the voice source</span> are inferred from video, and a renderer trained on audio alone turns the resulting <i>TractScore</i> into speech.</figcaption>
+  </figure>
+</section>
+
+<section class="wrap" id="problem">
+  <h2>The problem</h2>
+  <div class="prose">
+    <p>Lip-to-speech (L2S) synthesis generates the speech of a talking face from silent video. It can restore the sound of archival or corrupted recordings, give a voice to people who have lost theirs, and support communication in loud places.</p>
+    <p>The task is ill-posed in a specific way. Speech is produced by coordinated movements of the articulators and by the excitation of the voice source, but a camera records only the lips and the jaw. The tongue and the larynx stay inside the head. Many sounds therefore look alike on the lips, and a single lip movement can correspond to several words.</p>
+    <p>Most existing systems map video into learned latent spaces in which the visible lips and the hidden tongue are entangled. When such a system mispronounces a word, nothing tells whether the lips were misread, the tongue was guessed wrong, or the decoder failed. An L2S system therefore has to <i>read</i> what is visible, <i>infer</i> what is hidden, and <i>render</i> the result as sound, and TractTalk keeps these three steps explicit.</p>
+  </div>
+</section>
+
+<section class="wrap wide" id="samples">
+  <h2>Results from LRS3-TED</h2>
+  <div id="samples-list"></div>
+</section>
+
+<footer class="foot wrap">LRS3 test clips, 224 × 224 video, 16 kHz audio.</footer>
+
+<script>
+const SAMPLES = [
+  ["SSzRfSJTNW4-00001", "What is the exact relationship between levels of greenhouse gases and planetary"],
+  ["lmyZMtPVodo-00001", "That is some deep, deep emotion when you would want to do that"],
+  ["7gkdzkVbuVA-00005", "We take less notice of trivial matters"],
+  ["BQZKs75RMqM-00001", "It's almost becoming the syntax of a new language"],
+  ["SnSHsb5xKPo-00001", "It took six days to deploy a global malware campaign"],
+  ["n3kNlFMXslo-00002", "That's like finding an extra hour in the day"],
+];
+// [file suffix, label, tag, is ours]
+const SYSTEMS = [
+  ["silent", "Silent video", "input", false],
+  ["gt", "Ground truth", "real audio", false],
+  ["intelligible", "Intelligible", "audio reference", false],
+  ["diffv2s", "DiffV2S", "audio reference", false],
+  ["v2sflow_a", "V2SFlow-A", "audio reference", false],
+  ["tracttalk_a", "TractTalk-A", "ours · audio reference", true],
+  ["ff2v", "FF2V", "video only", false],
+  ["v2sflow_v", "V2SFlow-V", "video only", false],
+  ["tracttalk_v", "TractTalk-V", "ours · video only", true],
+];
+const list = document.getElementById("samples-list");
+SAMPLES.forEach(([id, text], i) => {
+  const s = document.createElement("div"); s.className = "sample";
+  s.innerHTML = `<div class="cap"><span class="k">Sample ${i + 1}:</span><i>${text}</i><span class="id">${id.replace("-", "/")}</span></div>`;
+  const tiles = document.createElement("div"); tiles.className = "tiles";
+  SYSTEMS.forEach(([suf, name, tag, ours]) => {
+    const f = document.createElement("figure"); f.className = "tile" + (ours ? " ours" : "");
+    const v = document.createElement("video");
+    v.controls = true; v.preload = "metadata"; v.playsInline = true;
+    v.src = `static/video/${id}-${suf}.mp4`;
+    v.setAttribute("aria-label", `Sample ${i + 1}, ${name}`);
+    const c = document.createElement("figcaption");
+    c.innerHTML = `<span class="name">${name}</span><span class="tag">${tag}</span>`;
+    f.append(v, c); tiles.appendChild(f);
+  });
+  s.appendChild(tiles); list.appendChild(s);
+});
+document.addEventListener("play", e => {
+  document.querySelectorAll("video").forEach(v => { if (v !== e.target) v.pause(); });
+}, true);
+</script>
+</body>
+</html>
